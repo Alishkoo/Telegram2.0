@@ -143,8 +143,8 @@
 		1208034C2D3D730B0075C2E7 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				122CCCEB2D3EB785007F7756 /* Login */,
 				120803202D3D6EFD0075C2E7 /* ConversationsViewController.swift */,
+				122CCCEB2D3EB785007F7756 /* Login */,
 				120803562D3D74A60075C2E7 /* PhotoViewerViewController.swift */,
 				120803582D3D74B30075C2E7 /* VideoPlayerViewController.swift */,
 				1208035A2D3D74D10075C2E7 /* NewConversationViewController.swift */,
@@ -529,6 +529,8 @@
 				DEVELOPMENT_TEAM = 3383BZV24G;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Messenger/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Please allow access to take a profile picture";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Please allow access to select a photo for your profile ";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -557,6 +559,8 @@
 				DEVELOPMENT_TEAM = 3383BZV24G;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Messenger/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Please allow access to take a profile picture";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Please allow access to select a photo for your profile ";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

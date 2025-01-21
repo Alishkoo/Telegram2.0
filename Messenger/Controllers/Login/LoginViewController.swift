@@ -83,6 +83,13 @@ class LoginViewController: UIViewController {
                                                             target: self,
                                                             action: #selector(didTapRegister))
         
+        // Added target to login, and delegates
+        loginButton.addTarget(self,
+                              action: #selector(loginButtonTapped),
+                              for: .touchUpInside)
+        emailField.delegate = self
+        passwordField.delegate = self
+        
         //MARK: Add subviews
         view.addSubview(scrollView)
         scrollView.addSubview(imageView)
@@ -117,7 +124,30 @@ class LoginViewController: UIViewController {
                                   height: 52)
     }
     
-    //MARK: func register
+    //MARK: objc functions
+    
+    @objc private func loginButtonTapped(){
+        guard let email = emailField.text, let password = passwordField.text,
+            !email.isEmpty, !password.isEmpty else {
+                alertUserLoginError()
+                return
+            }
+        
+        //TODO: Firebase Log in
+    }
+    
+    func alertUserLoginError(){
+        let alert = UIAlertController(title: "Woops",
+                                      message: "Please enter all information",
+                                      preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Dismiss",
+                                      style: .cancel,
+                                      handler: nil
+                                     ))
+        present(alert, animated: true)
+    }
+    
     @objc private func didTapRegister(){
         let vc = RegisterViewController()
         vc.title = "Create Account"
@@ -125,4 +155,21 @@ class LoginViewController: UIViewController {
     }
     
 
+}
+
+
+extension LoginViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        if textField == emailField {
+            passwordField.becomeFirstResponder()
+        }
+        else if textField == passwordField {
+            loginButtonTapped()
+        }
+        
+        return true
+    }
+    
 }
