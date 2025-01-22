@@ -33,6 +33,8 @@
 		12A07F002D4105750029E6A3 /* FirebaseAuthCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 12A07EFF2D4105750029E6A3 /* FirebaseAuthCombine-Community */; };
 		12A07F022D4105750029E6A3 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 12A07F012D4105750029E6A3 /* FirebaseCore */; };
 		12A07F042D4105750029E6A3 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 12A07F032D4105750029E6A3 /* FirebaseDatabase */; };
+		12A07F062D41162A0029E6A3 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12A07F052D41162A0029E6A3 /* DatabaseManager.swift */; };
+		12A07F082D4143E20029E6A3 /* ChatAppUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12A07F072D4143E20029E6A3 /* ChatAppUser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +76,8 @@
 		1208035C2D3D74EB0075C2E7 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		1212611E2D4028F700C3E0DE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		122CCCEC2D3EBBB3007F7756 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		12A07F052D41162A0029E6A3 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
+		12A07F072D4143E20029E6A3 /* ChatAppUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatAppUser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -186,6 +190,7 @@
 		1208034E2D3D73230075C2E7 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				12A07F072D4143E20029E6A3 /* ChatAppUser.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -203,6 +208,7 @@
 				1208031C2D3D6EFD0075C2E7 /* AppDelegate.swift */,
 				1208031E2D3D6EFD0075C2E7 /* SceneDelegate.swift */,
 				122CCCEC2D3EBBB3007F7756 /* Extensions.swift */,
+				12A07F052D41162A0029E6A3 /* DatabaseManager.swift */,
 			);
 			path = Resourses;
 			sourceTree = "<group>";
@@ -439,8 +445,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				120803532D3D747B0075C2E7 /* LoginViewController.swift in Sources */,
+				12A07F062D41162A0029E6A3 /* DatabaseManager.swift in Sources */,
 				120803552D3D74940075C2E7 /* RegisterViewController.swift in Sources */,
 				1208035B2D3D74D10075C2E7 /* NewConversationViewController.swift in Sources */,
+				12A07F082D4143E20029E6A3 /* ChatAppUser.swift in Sources */,
 				120803212D3D6EFD0075C2E7 /* ConversationsViewController.swift in Sources */,
 				120803592D3D74B30075C2E7 /* VideoPlayerViewController.swift in Sources */,
 				122CCCED2D3EBBB3007F7756 /* Extensions.swift in Sources */,

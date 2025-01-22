@@ -19,10 +19,10 @@ class RegisterViewController: UIViewController {
     
     private let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "person")
+        imageView.image = UIImage(systemName: "person.circle")
         imageView.tintColor = .gray
         imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 16
+        imageView.layer.cornerRadius = 24
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 3
         imageView.layer.borderColor = UIColor.lightGray.cgColor
@@ -147,6 +147,7 @@ class RegisterViewController: UIViewController {
         presentPhotoActionSheet()
     }
     
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -180,8 +181,8 @@ class RegisterViewController: UIViewController {
                                    height: 52)
     }
     
-    //MARK: objc functions
     
+    //MARK: objc functions
     @objc private func registerButtonTapped(){
         
         passwordField.resignFirstResponder()
@@ -199,22 +200,39 @@ class RegisterViewController: UIViewController {
             return
         }
         
-        //MARK: Firebase Log in
-        
-        FirebaseAuth.Auth.auth().createUser(withEmail: email, password: password, completion: {authResult, error in
-            guard let result = authResult, error == nil else {
-                print("Error in creating user")
+        //MARK: Firebase Register in
+        DatabaseManager.shared.userExists(with: email, completion: {[weak self] exists in
+            guard let strongSelf = self else {
                 return
             }
             
-            let user = result.user
-            print("Created User: \(user)")
+            guard !exists else{
+                // user already exists
+                self?.alertUserRegisterError(message: "User with this email address already exists")
+                return
+            }
+            
+            FirebaseAuth.Auth.auth().createUser(withEmail: email, password: password, completion: {authResult, error in
+                
+                guard authResult != nil, error == nil else {
+                    print("Error in creating user")
+                    return
+                }
+                
+                //MARK: add user to database
+                DatabaseManager.shared.insertUser(with: ChatAppUser(firstName: firstName,
+                                                                    lastName: lastName,
+                                                                    emailAddress: email))
+                
+                strongSelf.navigationController?.dismiss(animated: false, completion: nil)
+            })
         })
     }
     
-    func alertUserRegisterError(){
+    
+    func alertUserRegisterError(message: String = "Please enter all information to create a new account"){
         let alert = UIAlertController(title: "Woops",
-                                      message: "Please enter all information to create a new account",
+                                      message: message,
                                       preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "Dismiss",
@@ -230,7 +248,6 @@ class RegisterViewController: UIViewController {
 extension RegisterViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
         if textField == emailField {
             passwordField.becomeFirstResponder()
         }
@@ -240,11 +257,10 @@ extension RegisterViewController: UITextFieldDelegate {
         
         return true
     }
-    
 }
 
 
-//MARK: Extensions: ImagePicker
+//MARK: Extension: ImagePicker
 extension RegisterViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func presentPhotoActionSheet(){
