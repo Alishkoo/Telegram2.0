@@ -7,6 +7,8 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseCore
+import GoogleSignIn
 
 class LoginViewController: UIViewController {
     
@@ -72,10 +74,12 @@ class LoginViewController: UIViewController {
         return button
     }()
     
+    private let googleLogInButton = GIDSignInButton()
+    
     //MARK: ViewDidLoad()
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         title = "Log in"
         view.backgroundColor = .white
         
@@ -84,10 +88,13 @@ class LoginViewController: UIViewController {
                                                             target: self,
                                                             action: #selector(didTapRegister))
         
-        // Added target to login, and delegates
+        //MARK: target login, delegates
         loginButton.addTarget(self,
                               action: #selector(loginButtonTapped),
                               for: .touchUpInside)
+        googleLogInButton.addTarget(self,
+                                    action: #selector(googleSignInButtonTapped),
+                                    for: .touchUpInside)
         emailField.delegate = self
         passwordField.delegate = self
         
@@ -97,6 +104,7 @@ class LoginViewController: UIViewController {
         scrollView.addSubview(emailField)
         scrollView.addSubview(passwordField)
         scrollView.addSubview(loginButton)
+        scrollView.addSubview(googleLogInButton)
         
     }
     
@@ -116,26 +124,34 @@ class LoginViewController: UIViewController {
                                   width: scrollView.width - 60,
                                   height: 52)
         passwordField.frame = CGRect(x: 30,
-                                  y: emailField.bottom + 10,
-                                  width: scrollView.width - 60,
-                                  height: 52)
+                                     y: emailField.bottom + 10,
+                                     width: scrollView.width - 60,
+                                     height: 52)
         loginButton.frame = CGRect(x: 30,
-                                  y: passwordField.bottom + 10,
-                                  width: scrollView.width - 60,
-                                  height: 52)
+                                   y: passwordField.bottom + 10,
+                                   width: scrollView.width - 60,
+                                   height: 52)
+        googleLogInButton.frame = CGRect(x: 30,
+                                         y: loginButton.bottom + 10,
+                                         width: scrollView.width - 60,
+                                         height: 52)
     }
     
     //MARK: objc functions
     
     @objc private func loginButtonTapped(){
+        
+        //загрузочный экранчик
+//        LoadingManager.shared.showLoading(on: self)
+
         guard let email = emailField.text, let password = passwordField.text,
-            !email.isEmpty, !password.isEmpty else {
-                alertUserLoginError()
-                return
-            }
+              !email.isEmpty, !password.isEmpty else {
+            alertUserLoginError()
+            return
+        }
+        
         
         //MARK: Firebase Log in
-        
         FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password, completion: {[weak self] AuthResult, error in
             
             guard let strongSelf = self else {
@@ -146,12 +162,16 @@ class LoginViewController: UIViewController {
                 print("Errod with logging email: \(email)")
                 return
             }
-                
+            
             let user = result.user
             print("Logged user: \(user)")
+            
+//            LoadingManager.shared.hideLoading()
+            
             strongSelf.navigationController?.dismiss(animated: false, completion: nil)
         })
     }
+    
     
     func alertUserLoginError(){
         let alert = UIAlertController(title: "Woops",
@@ -165,13 +185,82 @@ class LoginViewController: UIViewController {
         present(alert, animated: true)
     }
     
+    
     @objc private func didTapRegister(){
         let vc = RegisterViewController()
         vc.title = "Create Account"
         navigationController?.pushViewController(vc, animated: true)
     }
     
-
+    //MARK: objc google sign in
+    @objc private func googleSignInButtonTapped(){
+        
+        //загрузочный экранчик
+        LoadingManager.shared.showLoading(on: self)
+        
+        guard let clientID = FirebaseApp.app()?.options.clientID else {return}
+        
+        let config = GIDConfiguration(clientID: clientID)
+        
+        GIDSignIn.sharedInstance.configuration = config
+        
+        GIDSignIn.sharedInstance.signIn(withPresenting: self) {[weak self] userAuthentication, error in
+            
+            if let error = error {
+                print("Error signing in with Google: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let user = userAuthentication?.user else {
+                print("Failed to sign in with Google.")
+                return
+            }
+            
+            guard let email = user.profile?.email,
+                  let firstName = user.profile?.givenName,
+                  let lastName = user.profile?.familyName else {
+                print("Error: with taking email, firstname, secondName")
+                return
+            }
+            
+            DatabaseManager.shared.userExists(with: email, completion: {exists in
+                if !exists {
+                    //insert to database
+                    DatabaseManager.shared.insertUser(with: ChatAppUser(firstName: firstName,
+                                                                        lastName: lastName,
+                                                                        emailAddress: email))
+                }
+            })
+            
+            guard let idToken = user.idToken else {
+                print("error idtoken")
+                return
+            }
+            
+            let accessToken = user.accessToken
+            
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken.tokenString, accessToken: accessToken.tokenString)
+            
+            FirebaseAuth.Auth.auth().signIn(with: credential, completion: { authResult, error in
+                guard authResult != nil, error == nil else{
+                    print("failed to log with google credential: ")
+                    return
+                }
+                
+                print("Successfully signed in with Google cred.")
+                
+                //Dissmiss
+                guard let strongSelf = self else {
+                    return
+                }
+                
+                LoadingManager.shared.hideLoading()
+                
+                strongSelf.navigationController?.dismiss(animated: false, completion: nil)
+                
+            })
+        }
+    }
 }
 
 
