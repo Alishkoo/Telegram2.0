@@ -9,10 +9,13 @@ import UIKit
 import FirebaseAuth
 import FirebaseCore
 import GoogleSignIn
+import JGProgressHUD
 
 class LoginViewController: UIViewController {
     
     //MARK: UIViews
+    private let spinner = JGProgressHUD(style: .dark)
+    
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.clipsToBounds = true
@@ -141,15 +144,15 @@ class LoginViewController: UIViewController {
     
     @objc private func loginButtonTapped(){
         
-        //загрузочный экранчик
-//        LoadingManager.shared.showLoading(on: self)
-
         guard let email = emailField.text, let password = passwordField.text,
               !email.isEmpty, !password.isEmpty else {
             alertUserLoginError()
             return
         }
         
+        //загрузочный экранчик
+//        LoadingManager.shared.showLoading(on: self)
+        spinner.show(in: view)
         
         //MARK: Firebase Log in
         FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password, completion: {[weak self] AuthResult, error in
@@ -166,7 +169,10 @@ class LoginViewController: UIViewController {
             let user = result.user
             print("Logged user: \(user)")
             
-//            LoadingManager.shared.hideLoading()
+            //all view processes must be in main thread
+            DispatchQueue.main.async {
+                strongSelf.spinner.dismiss()
+            }
             
             strongSelf.navigationController?.dismiss(animated: false, completion: nil)
         })
